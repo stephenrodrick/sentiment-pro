@@ -274,6 +274,7 @@ export default function PlatformPage() {
   }
 
   const handleExportData = async (format: string) => {
+    // Client-side export functionality
     const exportData = {
       mentions,
       messages,
@@ -283,27 +284,41 @@ export default function PlatformPage() {
       format
     }
 
-    try {
-      const response = await fetch('/api/export-data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(exportData)
-      })
+    let content = ''
+    let filename = `sentiment-data-${new Date().toISOString().split('T')[0]}`
+    let mimeType = 'text/plain'
 
-      if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `sentiment-data-${new Date().toISOString().split('T')[0]}.${format}`
-        document.body.appendChild(a)
-        a.click()
-        window.URL.revokeObjectURL(url)
-        document.body.removeChild(a)
-      }
-    } catch (error) {
-      console.error('Export failed:', error)
+    if (format === 'json') {
+      content = JSON.stringify(exportData, null, 2)
+      filename += '.json'
+      mimeType = 'application/json'
+    } else if (format === 'csv') {
+      const csvHeaders = ['ID', 'Platform', 'Author', 'Content', 'Sentiment', 'Timestamp']
+      const csvRows = mentions.map(m => [
+        m.id,
+        m.platform,
+        m.author.displayName,
+        `"${m.content.text.replace(/"/g, '""')}"`,
+        m.sentiment.score.toFixed(2),
+        m.timestamp.toISOString()
+      ])
+      content = [csvHeaders.join(','), ...csvRows.map(row => row.join(','))].join('\n')
+      filename += '.csv'
+      mimeType = 'text/csv'
+    } else {
+      content = `Sentiment Analysis Report\n\nGenerated: ${new Date().toLocaleString()}\n\nTotal Mentions: ${mentions.length}\nBrand Health: ${stats.brandHealth.toFixed(1)}%\nAverage Sentiment: ${stats.averageSentiment.toFixed(2)}`
+      filename += '.txt'
     }
+
+    const blob = new Blob([content], { type: mimeType })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(url)
+    document.body.removeChild(a)
   }
 
   const getPlatformIcon = (platform: string) => {
