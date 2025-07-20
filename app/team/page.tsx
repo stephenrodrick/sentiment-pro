@@ -205,4 +205,44 @@ export default function TeamPage() {
                 <div className="text-4xl font-bold text-green-600 mb-2">100+</div>
                 <p className="text-muted-foreground">Hours Coded</p>
               </CardContent>
-            </Card>\
+            </Card>
+            <Card className="text-center">
+              <CardContent className="pt-6">
+                <div className="text-4xl font-bold text-orange-600 mb-2">95%</div>
+                <p className="text-muted-foreground">Test Coverage</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Academic Recognition */}
+        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-purple-200">
+          <CardHeader>
+            <div className="flex items-center justify-center mb-4">
+              <GraduationCap className="h-8 w-8 text-purple-600" />
+            </div>
+            <CardTitle className="text-center text-2xl">Academic Excellence Project</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-muted-foreground mb-4">
+              Sentiment Watchdog Pro represents the culmination of our computer science education at 
+              <strong> SRM Institute of Science and Technology</strong>. This project demonstrates 
+              advanced concepts in AI, machine learning, full-stack development, and real-time systems.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <Badge variant="outline" className="px-4 py-2">
+                🎓 Final Year Project
+              </Badge>
+              <Badge variant="outline" className="px-4 py-2">
+                🏫 SRM Institute
+              </Badge>
+              <Badge variant="outline" className="px-4 py-2">
+                🤖 AI/ML Focus
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
