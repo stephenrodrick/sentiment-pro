@@ -2,88 +2,121 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Activity, Target } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Menu, Shield, Zap, Moon, Sun } from "lucide-react"
+import { useTheme } from "next-themes"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-    { href: "/team", label: "Team" },
-    { href: "/features", label: "Features" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/contact", label: "Contact" },
+  const navigation = [
+    { name: "Home", href: "/" },
+    { name: "Platform", href: "/platform" },
+    { name: "Features", href: "/features" },
+    { name: "About", href: "/about" },
+    { name: "Team", href: "/team" },
+    { name: "Pricing", href: "/pricing" },
+    { name: "Contact", href: "/contact" },
   ]
+
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/"
+    return pathname.startsWith(href)
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 hidden md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-              <Target className="h-5 w-5 text-white" />
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="hidden font-bold sm:inline-block bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Sentiment Watchdog Pro
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="transition-colors hover:text-foreground/80 text-foreground/60"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
+            <div className="flex flex-col">
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Sentiment Watchdog
+              </span>
+              <Badge variant="secondary" className="text-xs w-fit">
+                PRO
+              </Badge>
+            </div>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-6">
+          {navigation.map((item) => (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive(item.href) ? "text-primary border-b-2 border-primary pb-1" : "text-muted-foreground"
+              }`}
             >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="pr-0">
-            <Link href="/" className="flex items-center space-x-2" onClick={() => setIsOpen(false)}>
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
-                <Target className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold">Sentiment Watchdog Pro</span>
+              {item.name}
             </Link>
-            <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
-              <div className="flex flex-col space-y-3">
-                {navItems.map((item) => (
+          ))}
+        </nav>
+
+        {/* Actions */}
+        <div className="flex items-center space-x-4">
+          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+
+          <div className="hidden md:flex items-center space-x-2">
+            <Button variant="outline" asChild>
+              <Link href="/platform">
+                <Zap className="h-4 w-4 mr-2" />
+                Try Demo
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/contact">Get Started</Link>
+            </Button>
+          </div>
+
+          {/* Mobile Menu */}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild className="md:hidden">
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <nav className="flex flex-col space-y-4 mt-8">
+                {navigation.map((item) => (
                   <Link
-                    key={item.href}
+                    key={item.name}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="transition-colors hover:text-foreground/80 text-foreground/60"
+                    className={`text-lg font-medium transition-colors hover:text-primary ${
+                      isActive(item.href) ? "text-primary" : "text-muted-foreground"
+                    }`}
                   >
-                    {item.label}
+                    {item.name}
                   </Link>
                 ))}
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-            <Link href="/platform">
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
-                <Activity className="mr-2 h-4 w-4" />
-                Launch Platform
-              </Button>
-            </Link>
-          </div>
+                <div className="pt-4 space-y-2">
+                  <Button variant="outline" className="w-full bg-transparent" asChild>
+                    <Link href="/platform">Try Demo</Link>
+                  </Button>
+                  <Button className="w-full" asChild>
+                    <Link href="/contact">Get Started</Link>
+                  </Button>
+                </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>

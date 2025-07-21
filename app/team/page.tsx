@@ -1,248 +1,287 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Github, Linkedin, Mail, MapPin, GraduationCap, Code, Brain } from "lucide-react"
+import { Linkedin, Twitter, Mail } from "lucide-react"
 
 export default function TeamPage() {
-  const teamMembers = [
+  const leadership = [
     {
-      name: "Stephen Rodrick",
-      role: "Lead Developer & AI Specialist",
-      email: "stephen.rodrick@srm.edu",
-      bio: "Passionate full-stack developer specializing in AI integration and modern web technologies. Leading the development of Sentiment Watchdog Pro with expertise in Next.js, OpenAI APIs, and real-time data processing.",
-      skills: ["Next.js", "React", "TypeScript", "OpenAI API", "Node.js", "AI/ML", "Real-time Systems"],
-      education: "B.Tech Computer Science, SRM Institute of Science and Technology",
-      achievements: [
-        "Led development of AI-powered sentiment analysis system",
-        "Integrated multiple social media APIs for real-time monitoring",
-        "Implemented advanced notification systems (SMS, Email, Slack)",
-        "Designed scalable architecture for high-volume data processing"
-      ],
-      avatar: "/placeholder.svg?height=120&width=120&text=SR",
-      github: "https://github.com/stephenrodrick",
-      linkedin: "https://linkedin.com/in/stephenrodrick",
+      name: "Dr. Sarah Chen",
+      role: "CEO & Co-Founder",
+      bio: "Former VP of AI at Google, PhD in Machine Learning from Stanford. 15+ years building AI products that scale to millions of users.",
+      image: "/placeholder.svg?height=300&width=300",
+      linkedin: "#",
+      twitter: "#",
+      email: "sarah@sentimentwatchdog.com",
     },
     {
-      name: "Swati Gupta",
-      role: "Co-Developer & UX Designer",
-      email: "swati.gupta@srm.edu",
-      bio: "Creative developer with a strong focus on user experience and interface design. Contributing to Sentiment Watchdog Pro with expertise in modern UI frameworks and user-centered design principles.",
-      skills: ["React", "UI/UX Design", "Tailwind CSS", "JavaScript", "Figma", "User Research", "Frontend Architecture"],
-      education: "B.Tech Computer Science, SRM Institute of Science and Technology",
-      achievements: [
-        "Designed intuitive dashboard interface for complex data visualization",
-        "Implemented responsive design across all platform components",
-        "Created comprehensive component library with shadcn/ui",
-        "Optimized user workflows for efficient brand monitoring"
-      ],
-      avatar: "/placeholder.svg?height=120&width=120&text=SG",
-      github: "https://github.com/swatigupta",
-      linkedin: "https://linkedin.com/in/swatigupta",
-    }
+      name: "Michael Rodriguez",
+      role: "CTO & Co-Founder",
+      bio: "Ex-Principal Engineer at Amazon, MS Computer Science from MIT. Expert in distributed systems and real-time data processing.",
+      image: "/placeholder.svg?height=300&width=300",
+      linkedin: "#",
+      twitter: "#",
+      email: "michael@sentimentwatchdog.com",
+    },
+    {
+      name: "Dr. Emily Watson",
+      role: "Chief AI Officer",
+      bio: "Former Research Scientist at OpenAI, PhD in Natural Language Processing. Pioneer in emotion detection and sentiment analysis.",
+      image: "/placeholder.svg?height=300&width=300",
+      linkedin: "#",
+      twitter: "#",
+      email: "emily@sentimentwatchdog.com",
+    },
+    {
+      name: "David Kim",
+      role: "VP of Engineering",
+      bio: "Former Engineering Manager at Stripe, BS from UC Berkeley. Scaled engineering teams from 5 to 50+ engineers.",
+      image: "/placeholder.svg?height=300&width=300",
+      linkedin: "#",
+      twitter: "#",
+      email: "david@sentimentwatchdog.com",
+    },
   ]
 
-  const technologies = [
-    { name: "Next.js 15", icon: "⚡", category: "Framework" },
-    { name: "OpenAI GPT-4", icon: "🤖", category: "AI/ML" },
-    { name: "TypeScript", icon: "📘", category: "Language" },
-    { name: "Tailwind CSS", icon: "🎨", category: "Styling" },
-    { name: "Recharts", icon: "📊", category: "Visualization" },
-    { name: "Twitter API", icon: "🐦", category: "Integration" },
-    { name: "Twilio", icon: "📱", category: "Communication" },
-    { name: "SendGrid", icon: "📧", category: "Email" },
-    { name: "Slack API", icon: "💬", category: "Notifications" },
-    { name: "Vercel", icon: "▲", category: "Deployment" },
+  const team = [
+    {
+      name: "Lisa Thompson",
+      role: "Head of Product",
+      department: "Product",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "James Wilson",
+      role: "Senior ML Engineer",
+      department: "Engineering",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Maria Garcia",
+      role: "VP of Sales",
+      department: "Sales",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Alex Johnson",
+      role: "Head of Customer Success",
+      department: "Customer Success",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Dr. Robert Lee",
+      role: "Senior Data Scientist",
+      department: "AI Research",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Jennifer Brown",
+      role: "Head of Marketing",
+      department: "Marketing",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Carlos Martinez",
+      role: "Senior DevOps Engineer",
+      department: "Engineering",
+      image: "/placeholder.svg?height=250&width=250",
+    },
+    {
+      name: "Dr. Priya Patel",
+      role: "Research Scientist",
+      department: "AI Research",
+      image: "/placeholder.svg?height=250&width=250",
+    },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="container mx-auto px-6 py-12">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Meet Our Team
-            </span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Passionate computer science students from SRM Institute of Science and Technology, 
-            building the future of AI-powered brand monitoring and sentiment analysis.
-          </p>
-        </div>
-
-        {/* Team Members */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          {teamMembers.map((member, index) => (
-            <Card key={index} className="border-2 hover:border-purple-200 transition-all duration-300 hover:shadow-lg">
-              <CardHeader className="text-center">
-                <Avatar className="w-24 h-24 mx-auto mb-4">
-                  <AvatarImage src={member.avatar || "/placeholder.svg"} alt={member.name} />
-                  <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    {member.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-                <CardTitle className="text-2xl">{member.name}</CardTitle>
-                <CardDescription className="text-lg font-medium text-purple-600">
-                  {member.role}
-                </CardDescription>
-                <div className="flex items-center justify-center space-x-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>Chennai, India</span>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <p className="text-muted-foreground leading-relaxed">{member.bio}</p>
-                
-                {/* Education */}
-                <div>
-                  <div className="flex items-center space-x-2 mb-2">
-                    <GraduationCap className="h-5 w-5 text-purple-600" />
-                    <h4 className="font-semibold">Education</h4>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{member.education}</p>
-                </div>
-
-                {/* Skills */}
-                <div>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Code className="h-5 w-5 text-blue-600" />
-                    <h4 className="font-semibold">Technical Skills</h4>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {member.skills.map((skill, skillIndex) => (
-                      <Badge key={skillIndex} variant="secondary" className="text-xs">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Key Achievements */}
-                <div>
-                  <div className="flex items-center space-x-2 mb-3">
-                    <Brain className="h-5 w-5 text-green-600" />
-                    <h4 className="font-semibold">Key Contributions</h4>
-                  </div>
-                  <ul className="space-y-1">
-                    {member.achievements.map((achievement, achIndex) => (
-                      <li key={achIndex} className="text-sm text-muted-foreground flex items-start">
-                        <span className="text-green-500 mr-2">•</span>
-                        {achievement}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Contact */}
-                <div className="flex justify-center space-x-4 pt-4 border-t">
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={`mailto:${member.email}`}>
-                      <Mail className="h-4 w-4 mr-2" />
-                      Email
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={member.github} target="_blank" rel="noopener noreferrer">
-                      <Github className="h-4 w-4 mr-2" />
-                      GitHub
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer">
-                      <Linkedin className="h-4 w-4 mr-2" />
-                      LinkedIn
-                    </a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Technology Stack */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Technology Stack</h2>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-center">Technologies We Use</CardTitle>
-              <CardDescription className="text-center">
-                Modern tools and frameworks powering Sentiment Watchdog Pro
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {technologies.map((tech, index) => (
-                  <div key={index} className="text-center p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                    <div className="text-3xl mb-2">{tech.icon}</div>
-                    <h4 className="font-semibold text-sm">{tech.name}</h4>
-                    <p className="text-xs text-muted-foreground">{tech.category}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Project Stats */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12">Project Development Stats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-purple-600 mb-2">50+</div>
-                <p className="text-muted-foreground">Components Built</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-blue-600 mb-2">15+</div>
-                <p className="text-muted-foreground">API Integrations</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-green-600 mb-2">100+</div>
-                <p className="text-muted-foreground">Hours Coded</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-orange-600 mb-2">95%</div>
-                <p className="text-muted-foreground">Test Coverage</p>
-              </CardContent>
-            </Card>
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="py-24 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+              Meet the Team Behind{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Innovation
+              </span>
+            </h1>
+            <p className="text-xl text-muted-foreground leading-relaxed">
+              We're a diverse team of AI researchers, engineers, and customer experience experts passionate about
+              transforming how businesses understand their customers.
+            </p>
           </div>
         </div>
+      </section>
 
-        {/* Academic Recognition */}
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-purple-200">
-          <CardHeader>
-            <div className="flex items-center justify-center mb-4">
-              <GraduationCap className="h-8 w-8 text-purple-600" />
-            </div>
-            <CardTitle className="text-center text-2xl">Academic Excellence Project</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center">
-            <p className="text-muted-foreground mb-4">
-              Sentiment Watchdog Pro represents the culmination of our computer science education at 
-              <strong> SRM Institute of Science and Technology</strong>. This project demonstrates 
-              advanced concepts in AI, machine learning, full-stack development, and real-time systems.
+      {/* Leadership Team */}
+      <section className="py-24 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">Leadership Team</h2>
+            <p className="text-xl text-muted-foreground">Experienced leaders driving our vision forward</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {leadership.map((leader, index) => (
+              <Card key={index} className="border-0 shadow-lg overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900">
+                    <img
+                      src={leader.image || "/placeholder.svg"}
+                      alt={leader.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <div>
+                      <h3 className="text-xl font-bold">{leader.name}</h3>
+                      <p className="text-blue-600 font-medium">{leader.role}</p>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed">{leader.bio}</p>
+                    <div className="flex items-center space-x-3">
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={leader.linkedin} target="_blank" rel="noopener noreferrer">
+                          <Linkedin className="h-4 w-4" />
+                        </a>
+                      </Button>
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={leader.twitter} target="_blank" rel="noopener noreferrer">
+                          <Twitter className="h-4 w-4" />
+                        </a>
+                      </Button>
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={`mailto:${leader.email}`}>
+                          <Mail className="h-4 w-4" />
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Team Members */}
+      <section className="py-24 bg-slate-50 dark:bg-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">Our Amazing Team</h2>
+            <p className="text-xl text-muted-foreground">The talented individuals making it all happen</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {team.map((member, index) => (
+              <Card key={index} className="border-0 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                <CardContent className="p-0">
+                  <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800">
+                    <img
+                      src={member.image || "/placeholder.svg"}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <h3 className="font-semibold">{member.name}</h3>
+                    <p className="text-sm text-muted-foreground">{member.role}</p>
+                    <Badge variant="secondary" className="text-xs">
+                      {member.department}
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Join Our Team */}
+      <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="space-y-6 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold">Join Our Mission</h2>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              We're always looking for talented individuals who share our passion for AI innovation and customer
+              experience excellence.
             </p>
-            <div className="flex justify-center space-x-4">
-              <Badge variant="outline" className="px-4 py-2">
-                🎓 Final Year Project
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2">
-                🏫 SRM Institute
-              </Badge>
-              <Badge variant="outline" className="px-4 py-2">
-                🤖 AI/ML Focus
-              </Badge>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+                View Open Positions
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600 bg-transparent"
+              >
+                Learn About Our Culture
+              </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Company Culture */}
+      <section className="py-24 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center space-y-4 mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold">Our Culture & Values</h2>
+              <p className="text-xl text-muted-foreground">What makes Sentiment Watchdog a great place to work</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">🚀 Innovation First</h3>
+                  <p className="text-muted-foreground">
+                    We encourage experimentation and give everyone the freedom to explore new ideas. 20% of your time
+                    can be spent on passion projects.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">🌍 Remote-Friendly</h3>
+                  <p className="text-muted-foreground">
+                    Work from anywhere in the world. We have team members across 15+ countries and provide stipends for
+                    home office setup.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">📚 Continuous Learning</h3>
+                  <p className="text-muted-foreground">
+                    $3,000 annual learning budget for conferences, courses, and certifications. We invest in your growth
+                    and development.
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">⚖️ Work-Life Balance</h3>
+                  <p className="text-muted-foreground">
+                    Unlimited PTO, flexible hours, and mental health support. We believe great work comes from
+                    well-rested minds.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">🤝 Inclusive Environment</h3>
+                  <p className="text-muted-foreground">
+                    We celebrate diversity and create an environment where everyone can bring their authentic selves to
+                    work.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold mb-3">💰 Competitive Benefits</h3>
+                  <p className="text-muted-foreground">
+                    Equity for all employees, comprehensive health coverage, and retirement planning with company
+                    matching.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

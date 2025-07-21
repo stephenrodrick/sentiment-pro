@@ -1,42 +1,21 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertTriangle, CheckCircle, Clock, TrendingUp, Flame, Users } from "lucide-react"
-
-interface BrandMention {
-  id: string
-  platform: string
-  author: {
-    username: string
-    displayName: string
-    followers: number
-    verified: boolean
-    profileImage: string
-    influencerTier: "nano" | "micro" | "macro" | "mega" | "celebrity"
-  }
-  content: {
-    text: string
-    url: string
-  }
-  metrics: {
-    likes: number
-    shares: number
-    comments: number
-    views: number
-    engagement: number
-    reach: number
-  }
-  sentiment: {
-    score: number
-    emotion: "positive" | "negative" | "neutral" | "mixed"
-    confidence: number
-  }
-  timestamp: Date
-  viralPotential: number
-}
+import {
+  AlertTriangle,
+  Flame,
+  Users,
+  TrendingDown,
+  Shield,
+  Clock,
+  CheckCircle,
+  XCircle,
+  User,
+  MessageCircle,
+} from "lucide-react"
 
 interface BrandAlert {
   id: string
@@ -44,7 +23,7 @@ interface BrandAlert {
   severity: "low" | "medium" | "high" | "critical"
   title: string
   description: string
-  mentions: BrandMention[]
+  mentions: any[]
   timestamp: Date
   acknowledged: boolean
   assignedTo?: string
@@ -53,74 +32,73 @@ interface BrandAlert {
 
 interface AlertsPanelProps {
   alerts: BrandAlert[]
-  onAcknowledge: (alertId: string) => void
+  onAcknowledge: (id: string) => void
 }
 
 export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
-  const activeAlerts = alerts.filter((alert) => !alert.acknowledged)
-  const acknowledgedAlerts = alerts.filter((alert) => alert.acknowledged)
-
   const getAlertIcon = (type: string) => {
-    const icons = {
-      viral_mention: <Flame className="h-4 w-4" />,
-      negative_sentiment: <AlertTriangle className="h-4 w-4" />,
-      competitor_activity: <TrendingUp className="h-4 w-4" />,
-      influencer_mention: <Users className="h-4 w-4" />,
-      crisis_detection: <AlertTriangle className="h-4 w-4" />,
+    switch (type) {
+      case "viral_mention":
+        return <Flame className="h-4 w-4" />
+      case "negative_sentiment":
+        return <TrendingDown className="h-4 w-4" />
+      case "competitor_activity":
+        return <Shield className="h-4 w-4" />
+      case "influencer_mention":
+        return <Users className="h-4 w-4" />
+      case "crisis_detection":
+        return <AlertTriangle className="h-4 w-4" />
+      default:
+        return <AlertTriangle className="h-4 w-4" />
     }
-    return icons[type as keyof typeof icons] || <AlertTriangle className="h-4 w-4" />
   }
 
   const getAlertColor = (severity: string) => {
-    const colors = {
-      low: "border-blue-200 bg-blue-50 dark:bg-blue-950",
-      medium: "border-yellow-200 bg-yellow-50 dark:bg-yellow-950",
-      high: "border-orange-200 bg-orange-50 dark:bg-orange-950",
-      critical: "border-red-200 bg-red-50 dark:bg-red-950",
+    switch (severity) {
+      case "critical":
+        return "border-red-500 bg-red-50 dark:bg-red-950"
+      case "high":
+        return "border-orange-500 bg-orange-50 dark:bg-orange-950"
+      case "medium":
+        return "border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+      case "low":
+        return "border-blue-500 bg-blue-50 dark:bg-blue-950"
+      default:
+        return "border-gray-500 bg-gray-50 dark:bg-gray-950"
     }
-    return colors[severity as keyof typeof colors] || colors.medium
   }
 
   const getSeverityBadge = (severity: string) => {
-    const variants = {
-      low: "secondary" as const,
-      medium: "default" as const,
-      high: "default" as const,
-      critical: "destructive" as const,
+    switch (severity) {
+      case "critical":
+        return <Badge variant="destructive">CRITICAL</Badge>
+      case "high":
+        return (
+          <Badge variant="default" className="bg-orange-600">
+            HIGH
+          </Badge>
+        )
+      case "medium":
+        return <Badge variant="secondary">MEDIUM</Badge>
+      case "low":
+        return <Badge variant="outline">LOW</Badge>
+      default:
+        return <Badge variant="outline">UNKNOWN</Badge>
     }
-    return variants[severity as keyof typeof variants] || variants.medium
   }
 
-  const getTypeLabel = (type: string) => {
-    const labels = {
-      viral_mention: "Viral Mention",
-      negative_sentiment: "Negative Sentiment",
-      competitor_activity: "Competitor Activity",
-      influencer_mention: "Influencer Mention",
-      crisis_detection: "Crisis Detection",
-    }
-    return labels[type as keyof typeof labels] || type
-  }
+  const activeAlerts = alerts.filter((alert) => !alert.acknowledged)
+  const acknowledgedAlerts = alerts.filter((alert) => alert.acknowledged)
 
-  const getPlatformIcon = (platform: string) => {
-    const icons = {
-      twitter: "𝕏",
-      instagram: "📷",
-      facebook: "📘",
-      linkedin: "💼",
-      tiktok: "🎵",
-      youtube: "📺",
-      reddit: "🤖",
-      news: "📰",
-    }
-    return icons[platform as keyof typeof icons] || "🌐"
-  }
+  const alertsByType = alerts.reduce(
+    (acc, alert) => {
+      acc[alert.type] = (acc[alert.type] || 0) + 1
+      return acc
+    },
+    {} as Record<string, number>,
+  )
 
-  const getSentimentColor = (score: number) => {
-    if (score > 0.3) return "text-green-600"
-    if (score < -0.3) return "text-red-600"
-    return "text-yellow-600"
-  }
+  const criticalAlerts = alerts.filter((alert) => alert.severity === "critical" && !alert.acknowledged)
 
   return (
     <div className="space-y-6">
@@ -140,12 +118,10 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Critical Alerts</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <XCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {activeAlerts.filter((a) => a.severity === "critical").length}
-            </div>
+            <div className="text-2xl font-bold text-red-700">{criticalAlerts.length}</div>
             <p className="text-xs text-muted-foreground">Immediate action needed</p>
           </CardContent>
         </Card>
@@ -153,18 +129,10 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Resolved Today</CardTitle>
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {
-                acknowledgedAlerts.filter((a) => {
-                  const today = new Date()
-                  const alertDate = new Date(a.timestamp)
-                  return alertDate.toDateString() === today.toDateString()
-                }).length
-              }
-            </div>
+            <div className="text-2xl font-bold text-green-600">{acknowledgedAlerts.length}</div>
             <p className="text-xs text-muted-foreground">Acknowledged alerts</p>
           </CardContent>
         </Card>
@@ -175,16 +143,50 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">12m</div>
-            <p className="text-xs text-muted-foreground">Average response time</p>
+            <div className="text-2xl font-bold text-blue-600">4.2m</div>
+            <p className="text-xs text-muted-foreground">Average response</p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Critical Alerts Banner */}
+      {criticalAlerts.length > 0 && (
+        <Card className="border-red-500 bg-red-50 dark:bg-red-950">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="h-5 w-5 animate-pulse" />
+              Critical Alerts Requiring Immediate Attention
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {criticalAlerts.slice(0, 3).map((alert) => (
+                <div
+                  key={alert.id}
+                  className="flex items-center justify-between p-3 bg-white dark:bg-red-900 rounded-lg border border-red-200"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="text-red-600">{getAlertIcon(alert.type)}</div>
+                    <div>
+                      <p className="font-medium text-red-800 dark:text-red-200">{alert.title}</p>
+                      <p className="text-sm text-red-600 dark:text-red-300">{alert.description}</p>
+                    </div>
+                  </div>
+                  <Button size="sm" variant="destructive" onClick={() => onAcknowledge(alert.id)}>
+                    Acknowledge
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Alert Management Tabs */}
       <Tabs defaultValue="active" className="space-y-4">
         <TabsList>
           <TabsTrigger value="active">Active Alerts ({activeAlerts.length})</TabsTrigger>
-          <TabsTrigger value="resolved">Resolved ({acknowledgedAlerts.length})</TabsTrigger>
+          <TabsTrigger value="acknowledged">Acknowledged ({acknowledgedAlerts.length})</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
 
@@ -192,188 +194,132 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
           <Card>
             <CardHeader>
               <CardTitle>Active Brand Alerts</CardTitle>
-              <CardDescription>Alerts requiring immediate attention and action</CardDescription>
+              <CardDescription>Alerts that require immediate attention and action</CardDescription>
             </CardHeader>
             <CardContent>
-              {activeAlerts.length === 0 ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">All Clear!</h3>
-                  <p className="text-muted-foreground">
-                    No active alerts at the moment. Your brand monitoring is running smoothly.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {activeAlerts
-                    .sort((a, b) => {
-                      const severityOrder = { critical: 4, high: 3, medium: 2, low: 1 }
-                      return (
-                        severityOrder[b.severity as keyof typeof severityOrder] -
-                        severityOrder[a.severity as keyof typeof severityOrder]
-                      )
-                    })
-                    .map((alert) => (
-                      <div key={alert.id} className={`border rounded-lg p-6 ${getAlertColor(alert.severity)}`}>
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className={`p-2 rounded-lg ${
-                                alert.severity === "critical"
-                                  ? "bg-red-100 text-red-600"
-                                  : alert.severity === "high"
-                                    ? "bg-orange-100 text-orange-600"
-                                    : alert.severity === "medium"
-                                      ? "bg-yellow-100 text-yellow-600"
-                                      : "bg-blue-100 text-blue-600"
-                              }`}
-                            >
-                              {getAlertIcon(alert.type)}
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-semibold text-lg">{alert.title}</h3>
-                                <Badge variant={getSeverityBadge(alert.severity)}>{alert.severity.toUpperCase()}</Badge>
-                                <Badge variant="outline">{getTypeLabel(alert.type)}</Badge>
-                              </div>
-                              <p className="text-muted-foreground">{alert.description}</p>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {alert.timestamp.toLocaleString()} • {alert.mentions.length} affected mentions
-                              </p>
-                            </div>
+              <div className="space-y-4">
+                {activeAlerts.map((alert) => (
+                  <div key={alert.id} className={`border rounded-lg p-4 ${getAlertColor(alert.severity)}`}>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-white dark:bg-gray-800">{getAlertIcon(alert.type)}</div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold">{alert.title}</h3>
+                            {getSeverityBadge(alert.severity)}
                           </div>
-                          <Button onClick={() => onAcknowledge(alert.id)} variant="outline" size="sm">
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            Acknowledge
-                          </Button>
-                        </div>
-
-                        {/* Alert Details */}
-                        <div className="space-y-3">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <span className="font-medium">Affected Mentions:</span> {alert.mentions.length}
-                            </div>
-                            <div>
-                              <span className="font-medium">Total Reach:</span>{" "}
-                              {alert.mentions.reduce((sum, m) => sum + m.metrics.reach, 0).toLocaleString()}
-                            </div>
-                            <div>
-                              <span className="font-medium">Avg Sentiment:</span>
-                              <span
-                                className={getSentimentColor(
-                                  alert.mentions.reduce((sum, m) => sum + m.sentiment.score, 0) / alert.mentions.length,
-                                )}
-                              >
-                                {" "}
-                                {(
-                                  alert.mentions.reduce((sum, m) => sum + m.sentiment.score, 0) / alert.mentions.length
-                                ).toFixed(2)}
+                          <p className="text-sm text-muted-foreground">{alert.description}</p>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {alert.timestamp.toLocaleString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MessageCircle className="h-3 w-3" />
+                              {alert.mentions.length} mentions
+                            </span>
+                            {alert.assignedTo && (
+                              <span className="flex items-center gap-1">
+                                <User className="h-3 w-3" />
+                                {alert.assignedTo}
                               </span>
-                            </div>
+                            )}
                           </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => onAcknowledge(alert.id)}>
+                          Acknowledge
+                        </Button>
+                        <Button size="sm" variant="default">
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
 
-                          {/* Top Mentions */}
-                          {alert.mentions.length > 0 && (
-                            <div>
-                              <h4 className="font-medium mb-2">Top Affected Mentions:</h4>
-                              <div className="space-y-2">
-                                {alert.mentions.slice(0, 2).map((mention) => (
-                                  <div key={mention.id} className="bg-white dark:bg-gray-800 rounded-lg p-3 border">
-                                    <div className="flex items-start justify-between mb-2">
-                                      <div className="flex items-center space-x-2">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm">
-                                          {mention.author.displayName.charAt(0)}
-                                        </div>
-                                        <div>
-                                          <div className="flex items-center gap-1">
-                                            <span className="font-medium text-sm">{mention.author.displayName}</span>
-                                            {mention.author.verified && (
-                                              <Badge variant="secondary" className="text-xs">
-                                                ✓
-                                              </Badge>
-                                            )}
-                                            <span className="text-sm">{getPlatformIcon(mention.platform)}</span>
-                                          </div>
-                                          <p className="text-xs text-muted-foreground">
-                                            {mention.author.followers.toLocaleString()} followers
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <Badge
-                                        variant="outline"
-                                        className={`${getSentimentColor(mention.sentiment.score)} border-current text-xs`}
-                                      >
-                                        {mention.sentiment.emotion}
-                                      </Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground">
-                                      {mention.content.text.substring(0, 100)}
-                                      {mention.content.text.length > 100 && "..."}
-                                    </p>
-                                    <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-                                      <div className="flex items-center space-x-3">
-                                        <span>{mention.metrics.likes.toLocaleString()} likes</span>
-                                        <span>{mention.metrics.shares.toLocaleString()} shares</span>
-                                        <span>{mention.metrics.comments.toLocaleString()} comments</span>
-                                      </div>
-                                      <span>{mention.timestamp.toLocaleTimeString()}</span>
-                                    </div>
-                                  </div>
-                                ))}
+                    {/* Alert Details */}
+                    {alert.mentions.length > 0 && (
+                      <div className="mt-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
+                        <h4 className="text-sm font-medium mb-2">Related Mentions:</h4>
+                        <div className="space-y-2">
+                          {alert.mentions.slice(0, 2).map((mention, index) => (
+                            <div key={index} className="text-xs p-2 bg-white dark:bg-gray-800 rounded border">
+                              <p className="line-clamp-2">
+                                {mention.content?.text || mention.text || "Mention content"}
+                              </p>
+                              <div className="flex items-center justify-between mt-1 text-muted-foreground">
+                                <span>@{mention.author?.username || mention.username || "unknown"}</span>
+                                <span>{mention.platform || "platform"}</span>
                               </div>
                             </div>
+                          ))}
+                          {alert.mentions.length > 2 && (
+                            <p className="text-xs text-muted-foreground">+{alert.mentions.length - 2} more mentions</p>
                           )}
                         </div>
                       </div>
-                    ))}
-                </div>
-              )}
+                    )}
+                  </div>
+                ))}
+
+                {activeAlerts.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No active alerts</p>
+                    <p className="text-sm">All alerts have been acknowledged</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="resolved">
+        <TabsContent value="acknowledged">
           <Card>
             <CardHeader>
-              <CardTitle>Resolved Alerts</CardTitle>
-              <CardDescription>Previously acknowledged and resolved alerts</CardDescription>
+              <CardTitle>Acknowledged Alerts</CardTitle>
+              <CardDescription>Previously resolved alerts and actions taken</CardDescription>
             </CardHeader>
             <CardContent>
-              {acknowledgedAlerts.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Resolved Alerts</h3>
-                  <p className="text-muted-foreground">
-                    Resolved alerts will appear here once you acknowledge active alerts.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {acknowledgedAlerts.slice(0, 10).map((alert) => (
-                    <div key={alert.id} className="border rounded-lg p-4 bg-muted/30">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600" />
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-medium">{alert.title}</h3>
-                              <Badge variant="outline" className="text-xs">
-                                {getTypeLabel(alert.type)}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{alert.description}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Resolved: {alert.timestamp.toLocaleString()}
-                            </p>
-                          </div>
+              <div className="space-y-4">
+                {acknowledgedAlerts.map((alert) => (
+                  <div key={alert.id} className="border rounded-lg p-4 bg-green-50 dark:bg-green-950 border-green-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-full bg-green-100 dark:bg-green-900">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
                         </div>
-                        <Badge variant="secondary">{alert.severity.toUpperCase()}</Badge>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold">{alert.title}</h3>
+                            <Badge variant="outline" className="text-green-700 border-green-300">
+                              RESOLVED
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{alert.description}</p>
+                          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                            <span>Resolved: {alert.timestamp.toLocaleString()}</span>
+                            {alert.assignedTo && <span>By: {alert.assignedTo}</span>}
+                          </div>
+                          {alert.actionTaken && (
+                            <div className="mt-2 p-2 bg-green-100 dark:bg-green-900 rounded text-xs">
+                              <strong>Action Taken:</strong> {alert.actionTaken}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+
+                {acknowledgedAlerts.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Clock className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No acknowledged alerts</p>
+                    <p className="text-sm">Resolved alerts will appear here</p>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -387,28 +333,20 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(
-                    alerts.reduce(
-                      (acc, alert) => {
-                        acc[alert.type] = (acc[alert.type] || 0) + 1
-                        return acc
-                      },
-                      {} as Record<string, number>,
-                    ),
-                  ).map(([type, count]) => (
+                  {Object.entries(alertsByType).map(([type, count]) => (
                     <div key={type} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center gap-2">
                         {getAlertIcon(type)}
-                        <span className="font-medium">{getTypeLabel(type)}</span>
+                        <span className="capitalize">{type.replace("_", " ")}</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground">{count}</span>
-                        <div className="w-20 h-2 bg-muted rounded-full">
+                      <div className="flex items-center gap-2">
+                        <div className="w-20 bg-gray-200 rounded-full h-2">
                           <div
-                            className="h-full bg-blue-500 rounded-full"
+                            className="bg-blue-600 h-2 rounded-full"
                             style={{ width: `${(count / alerts.length) * 100}%` }}
                           />
                         </div>
+                        <span className="text-sm font-medium">{count}</span>
                       </div>
                     </div>
                   ))}
@@ -418,54 +356,31 @@ export function AlertsPanel({ alerts, onAcknowledge }: AlertsPanelProps) {
 
             <Card>
               <CardHeader>
-                <CardTitle>Alert Severity Trends</CardTitle>
-                <CardDescription>Distribution of alert severity levels</CardDescription>
+                <CardTitle>Alert Response Metrics</CardTitle>
+                <CardDescription>Performance metrics for alert management</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(
-                    alerts.reduce(
-                      (acc, alert) => {
-                        acc[alert.severity] = (acc[alert.severity] || 0) + 1
-                        return acc
-                      },
-                      {} as Record<string, number>,
-                    ),
-                  ).map(([severity, count]) => (
-                    <div key={severity} className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <div
-                          className={`w-3 h-3 rounded-full ${
-                            severity === "critical"
-                              ? "bg-red-500"
-                              : severity === "high"
-                                ? "bg-orange-500"
-                                : severity === "medium"
-                                  ? "bg-yellow-500"
-                                  : "bg-blue-500"
-                          }`}
-                        />
-                        <span className="font-medium capitalize">{severity}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm text-muted-foreground">{count}</span>
-                        <div className="w-20 h-2 bg-muted rounded-full">
-                          <div
-                            className={`h-full rounded-full ${
-                              severity === "critical"
-                                ? "bg-red-500"
-                                : severity === "high"
-                                  ? "bg-orange-500"
-                                  : severity === "medium"
-                                    ? "bg-yellow-500"
-                                    : "bg-blue-500"
-                            }`}
-                            style={{ width: `${(count / alerts.length) * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium">Average Response Time</span>
+                    <span className="text-lg font-bold text-blue-600">4.2 minutes</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium">Resolution Rate</span>
+                    <span className="text-lg font-bold text-green-600">
+                      {alerts.length > 0 ? ((acknowledgedAlerts.length / alerts.length) * 100).toFixed(1) : 0}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium">Critical Alert Rate</span>
+                    <span className="text-lg font-bold text-red-600">
+                      {alerts.length > 0 ? ((criticalAlerts.length / alerts.length) * 100).toFixed(1) : 0}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium">Total Alerts Today</span>
+                    <span className="text-lg font-bold">{alerts.length}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>

@@ -1,154 +1,186 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Activity, BarChart3, Bell, Brain, Globe, Shield, Zap, ArrowRight, CheckCircle } from "lucide-react"
+import {
+  Shield,
+  Zap,
+  BarChart3,
+  Bell,
+  Users,
+  Globe,
+  ArrowRight,
+  CheckCircle,
+  Star,
+  TrendingUp,
+  Clock,
+  Target,
+} from "lucide-react"
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-purple-950 dark:via-gray-900 dark:to-pink-950">
-        <div className="absolute inset-0 bg-grid-black/[0.02] bg-[size:60px_60px]" />
-        <div className="relative container mx-auto px-6 py-24 lg:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-blue-950 dark:to-purple-950">
+        <div className="absolute inset-0 bg-grid-slate-100 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.6))] dark:bg-grid-slate-700/25" />
+        <div className="relative container mx-auto px-4 py-24 lg:py-32">
           <div className="text-center space-y-8">
-            <Badge variant="outline" className="px-4 py-2 text-sm font-medium">
-              🚀 Now with Real-time AI Analysis
-            </Badge>
+            <div className="space-y-4">
+              <Badge variant="secondary" className="px-4 py-2">
+                <Zap className="h-4 w-4 mr-2" />
+                AI-Powered Sentiment Intelligence
+              </Badge>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+                Monitor Customer{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  Sentiment
+                </span>{" "}
+                in Real-Time
+              </h1>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Enterprise-grade AI platform that analyzes customer emotions across all channels, triggers intelligent
+                alerts, and provides actionable insights to improve customer satisfaction.
+              </p>
+            </div>
 
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                AI-Powered
-              </span>
-              <br />
-              Brand Monitoring
-            </h1>
-
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Monitor your brand across all social media platforms with advanced sentiment analysis, real-time alerts,
-              and comprehensive analytics powered by OpenAI.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/platform">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-                >
-                  <Activity className="mr-2 h-5 w-5" />
-                  Launch Platform
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/features">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6 bg-transparent">
-                  View Features
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" className="text-lg px-8 py-6" asChild>
+                <Link href="/platform">
+                  <Shield className="h-5 w-5 mr-2" />
+                  Try Live Demo
+                </Link>
+              </Button>
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6 bg-transparent" asChild>
+                <Link href="/contact">
+                  Schedule Demo
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Link>
+              </Button>
             </div>
 
             <div className="flex items-center justify-center space-x-8 text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>Real-time Monitoring</span>
+                <span>Free 14-day trial</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>AI Sentiment Analysis</span>
+                <span>No credit card required</span>
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="h-4 w-4 text-green-500" />
-                <span>Instant Alerts</span>
+                <span>Enterprise ready</span>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-blue-600 mb-2">99.2%</div>
+              <p className="text-muted-foreground">Accuracy Rate</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-green-600 mb-2">10M+</div>
+              <p className="text-muted-foreground">Messages Analyzed</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-purple-600 mb-2">500+</div>
+              <p className="text-muted-foreground">Enterprise Clients</p>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-orange-600 mb-2">24/7</div>
+              <p className="text-muted-foreground">Real-time Monitoring</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Powerful Features for Modern Brands</h2>
+      <section className="py-24 bg-slate-50 dark:bg-slate-800">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Powerful Features for <span className="text-blue-600">Modern Businesses</span>
+            </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to monitor, analyze, and protect your brand reputation online.
+              Everything you need to understand and improve customer sentiment across all touchpoints
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                  <BarChart3 className="h-6 w-6 text-blue-600" />
                 </div>
-                <CardTitle>AI Sentiment Analysis</CardTitle>
+                <CardTitle>Real-time Analytics</CardTitle>
                 <CardDescription>
-                  Advanced AI-powered sentiment analysis using OpenAI's latest models to understand customer emotions
-                  and opinions.
+                  Monitor sentiment trends across all channels with live dashboards and interactive visualizations
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
-                  <Activity className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-4">
+                  <Bell className="h-6 w-6 text-red-600" />
                 </div>
-                <CardTitle>Real-time Monitoring</CardTitle>
+                <CardTitle>Intelligent Alerts</CardTitle>
                 <CardDescription>
-                  Monitor mentions across Twitter, Instagram, Facebook, LinkedIn, TikTok, YouTube, Reddit, and news
-                  sites in real-time.
+                  Get instant notifications when sentiment drops, with customizable thresholds and escalation rules
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mb-4">
-                  <Bell className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-green-600" />
                 </div>
-                <CardTitle>Instant Alerts</CardTitle>
+                <CardTitle>Multi-Channel Support</CardTitle>
                 <CardDescription>
-                  Get immediate notifications via SMS, email, and Slack when critical brand mentions or sentiment
-                  changes are detected.
+                  Analyze sentiment from email, chat, social media, phone calls, and support tickets in one place
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                  <Globe className="h-6 w-6 text-purple-600" />
                 </div>
-                <CardTitle>Advanced Analytics</CardTitle>
+                <CardTitle>Global Language Support</CardTitle>
                 <CardDescription>
-                  Comprehensive analytics dashboard with brand health scores, share of voice, influencer tracking, and
-                  competitor analysis.
+                  Process sentiment in 25+ languages with cultural context awareness and regional customization
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center mb-4">
-                  <Globe className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-orange-600" />
                 </div>
-                <CardTitle>Multi-Platform Coverage</CardTitle>
+                <CardTitle>AI-Powered Insights</CardTitle>
                 <CardDescription>
-                  Monitor all major social media platforms, news sites, blogs, and forums from a single unified
-                  dashboard.
+                  Leverage advanced machine learning models for accurate emotion detection and predictive analytics
                 </CardDescription>
               </CardHeader>
             </Card>
 
-            <Card className="border-2 hover:border-purple-200 transition-colors">
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
               <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-white" />
+                <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900 rounded-lg flex items-center justify-center mb-4">
+                  <Shield className="h-6 w-6 text-teal-600" />
                 </div>
-                <CardTitle>Crisis Detection</CardTitle>
+                <CardTitle>Enterprise Security</CardTitle>
                 <CardDescription>
-                  Early warning system for potential PR crises with automated escalation and response recommendations.
+                  Bank-grade security with SOC2 compliance, data encryption, and GDPR-ready privacy controls
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -156,60 +188,113 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-24 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Trusted by Growing Brands</h2>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Join thousands of companies using Sentiment Watchdog Pro to protect and grow their brand reputation.
-            </p>
+      {/* Testimonials Section */}
+      <section className="py-24 bg-white dark:bg-slate-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-4 mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">Trusted by Industry Leaders</h2>
+            <p className="text-xl text-muted-foreground">See what our customers say about Sentiment Watchdog Pro</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">1M+</div>
-              <div className="text-lg opacity-90">Mentions Analyzed</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">50K+</div>
-              <div className="text-lg opacity-90">Alerts Sent</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">99.9%</div>
-              <div className="text-lg opacity-90">Uptime</div>
-            </div>
-            <div>
-              <div className="text-4xl md:text-5xl font-bold mb-2">24/7</div>
-              <div className="text-lg opacity-90">Monitoring</div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "Sentiment Watchdog has transformed how we handle customer support. We can now identify and resolve
+                  issues before they escalate."
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    SJ
+                  </div>
+                  <div>
+                    <p className="font-semibold">Sarah Johnson</p>
+                    <p className="text-sm text-muted-foreground">VP Customer Success, TechCorp</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "The real-time alerts have helped us reduce customer churn by 35%. The ROI was evident within the
+                  first month."
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    MR
+                  </div>
+                  <div>
+                    <p className="font-semibold">Michael Rodriguez</p>
+                    <p className="text-sm text-muted-foreground">Director of Operations, RetailPlus</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground mb-4">
+                  "Implementation was seamless and the insights are incredibly actionable. Our customer satisfaction
+                  scores have never been higher."
+                </p>
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+                    EC
+                  </div>
+                  <div>
+                    <p className="font-semibold">Emily Chen</p>
+                    <p className="text-sm text-muted-foreground">Head of Customer Experience, FinanceFlow</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-3xl mx-auto space-y-8">
-            <h2 className="text-3xl md:text-4xl font-bold">Ready to Protect Your Brand?</h2>
-            <p className="text-xl text-muted-foreground">
-              Start monitoring your brand mentions and sentiment across all platforms with our AI-powered platform.
+      <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="container mx-auto px-4 text-center">
+          <div className="space-y-6 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold">Ready to Transform Your Customer Experience?</h2>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto">
+              Join hundreds of companies using Sentiment Watchdog Pro to deliver exceptional customer service
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/platform">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
-                >
-                  <Zap className="mr-2 h-5 w-5" />
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-6" asChild>
+                <Link href="/platform">
+                  <TrendingUp className="h-5 w-5 mr-2" />
                   Start Free Trial
-                </Button>
-              </Link>
-              <Link href="/contact">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6 bg-transparent">
-                  Contact Sales
-                </Button>
-              </Link>
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-lg px-8 py-6 text-white border-white hover:bg-white hover:text-blue-600 bg-transparent"
+                asChild
+              >
+                <Link href="/contact">
+                  <Clock className="h-5 w-5 mr-2" />
+                  Book a Demo
+                </Link>
+              </Button>
             </div>
           </div>
         </div>

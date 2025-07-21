@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Star, Users, TrendingUp, Heart, MessageCircle, Share, Eye } from "lucide-react"
+import { Star, TrendingUp, Users, MessageCircle, Heart, Eye, CheckCircle, ExternalLink, Flame } from "lucide-react"
 
 interface BrandMention {
   id: string
@@ -37,18 +37,31 @@ interface BrandMention {
     emotion: "positive" | "negative" | "neutral" | "mixed"
     confidence: number
   }
-  keywords: string[]
-  hashtags: string[]
-  mentions: string[]
   timestamp: Date
-  location?: string
-  language: string
-  brandRelevance: number
   viralPotential: number
-  isCompetitor: boolean
-  competitorBrand?: string
-  priority: "low" | "medium" | "high" | "critical"
-  category: "product" | "service" | "brand" | "campaign" | "crisis" | "opportunity"
+}
+
+interface InfluencerProfile {
+  id: string
+  username: string
+  displayName: string
+  platform: string
+  followers: number
+  following: number
+  posts: number
+  engagement: number
+  tier: "nano" | "micro" | "macro" | "mega" | "celebrity"
+  niche: string[]
+  location: string
+  verified: boolean
+  profileImage: string
+  bio: string
+  recentMentions: number
+  sentimentScore: number
+  brandAffinity: number
+  collaborationHistory: boolean
+  lastActive: Date
+  trending: boolean
 }
 
 interface InfluencerTrackerProps {
@@ -56,58 +69,78 @@ interface InfluencerTrackerProps {
 }
 
 export function InfluencerTracker({ mentions }: InfluencerTrackerProps) {
-  // Group mentions by influencer
-  const influencerMentions = mentions.filter(
-    (mention) =>
-      mention.author.influencerTier === "micro" ||
-      mention.author.influencerTier === "macro" ||
-      mention.author.influencerTier === "mega" ||
-      mention.author.influencerTier === "celebrity",
-  )
-
-  const influencerStats = influencerMentions.reduce(
-    (acc, mention) => {
-      const key = mention.author.username
-      if (!acc[key]) {
-        acc[key] = {
-          author: mention.author,
-          mentions: [],
-          totalReach: 0,
-          totalEngagement: 0,
-          averageSentiment: 0,
-          platforms: new Set<string>(),
+  // Process mentions to extract influencer data
+  const influencerData = mentions
+    .filter((mention) => mention.author.influencerTier !== "nano")
+    .reduce(
+      (acc, mention) => {
+        const key = `${mention.author.username}-${mention.platform}`
+        if (!acc[key]) {
+          acc[key] = {
+            id: key,
+            username: mention.author.username,
+            displayName: mention.author.displayName,
+            platform: mention.platform,
+            followers: mention.author.followers,
+            following: Math.floor(mention.author.followers * 0.1),
+            posts: Math.floor(Math.random() * 1000) + 100,
+            engagement: mention.metrics.engagement,
+            tier: mention.author.influencerTier,
+            niche: ["technology", "lifestyle", "business"][Math.floor(Math.random() * 3)],
+            location: ["Chennai", "Mumbai", "Delhi", "Bangalore"][Math.floor(Math.random() * 4)],
+            verified: mention.author.verified,
+            profileImage: mention.author.profileImage,
+            bio: `${mention.author.displayName} - Content creator and influencer`,
+            recentMentions: 1,
+            sentimentScore: mention.sentiment.score,
+            brandAffinity: Math.random() * 100,
+            collaborationHistory: Math.random() > 0.7,
+            lastActive: mention.timestamp,
+            trending: mention.viralPotential > 0.7,
+          }
+        } else {
+          acc[key].recentMentions += 1
+          acc[key].sentimentScore = (acc[key].sentimentScore + mention.sentiment.score) / 2
+          acc[key].engagement = Math.max(acc[key].engagement, mention.metrics.engagement)
+          if (mention.timestamp > acc[key].lastActive) {
+            acc[key].lastActive = mention.timestamp
+          }
         }
-      }
-      acc[key].mentions.push(mention)
-      acc[key].totalReach += mention.metrics.reach
-      acc[key].totalEngagement += mention.metrics.engagement
-      acc[key].platforms.add(mention.platform)
-      return acc
-    },
-    {} as Record<string, any>,
-  )
+        return acc
+      },
+      {} as Record<string, InfluencerProfile>,
+    )
 
-  // Calculate average sentiment for each influencer
-  Object.keys(influencerStats).forEach((key) => {
-    const stats = influencerStats[key]
-    stats.averageSentiment =
-      stats.mentions.reduce((sum: number, m: BrandMention) => sum + m.sentiment.score, 0) / stats.mentions.length
-  })
-
-  // Sort by total reach
-  const topInfluencers = Object.values(influencerStats)
-    .sort((a: any, b: any) => b.totalReach - a.totalReach)
-    .slice(0, 10)
+  const influencers = Object.values(influencerData).sort((a, b) => b.followers - a.followers)
 
   const getTierColor = (tier: string) => {
-    const colors = {
-      nano: "bg-gray-100 text-gray-800",
-      micro: "bg-blue-100 text-blue-800",
-      macro: "bg-purple-100 text-purple-800",
-      mega: "bg-orange-100 text-orange-800",
-      celebrity: "bg-red-100 text-red-800",
+    switch (tier) {
+      case "celebrity":
+        return "bg-red-100 text-red-800 border-red-200"
+      case "mega":
+        return "bg-orange-100 text-orange-800 border-orange-200"
+      case "macro":
+        return "bg-purple-100 text-purple-800 border-purple-200"
+      case "micro":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
-    return colors[tier as keyof typeof colors] || "bg-gray-100 text-gray-800"
+  }
+
+  const getTierIcon = (tier: string) => {
+    switch (tier) {
+      case "celebrity":
+        return "👑"
+      case "mega":
+        return "🌟"
+      case "macro":
+        return "⭐"
+      case "micro":
+        return "✨"
+      default:
+        return "💫"
+    }
   }
 
   const getSentimentColor = (score: number) => {
@@ -130,254 +163,236 @@ export function InfluencerTracker({ mentions }: InfluencerTrackerProps) {
     return icons[platform as keyof typeof icons] || "🌐"
   }
 
+  // Calculate summary stats
+  const totalInfluencers = influencers.length
+  const totalReach = influencers.reduce((sum, inf) => sum + inf.followers, 0)
+  const averageSentiment =
+    influencers.length > 0 ? influencers.reduce((sum, inf) => sum + inf.sentimentScore, 0) / influencers.length : 0
+  const trendingInfluencers = influencers.filter((inf) => inf.trending).length
+
   return (
     <div className="space-y-6">
-      {/* Influencer Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Influencers</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{Object.keys(influencerStats).length}</div>
-            <p className="text-xs text-muted-foreground">Active this period</p>
+            <div className="text-2xl font-bold text-purple-700">{totalInfluencers}</div>
+            <p className="text-xs text-purple-600 mt-1">Active brand mentions</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <Eye className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {(
-                Object.values(influencerStats).reduce((sum: number, stats: any) => sum + stats.totalReach, 0) / 1000000
-              ).toFixed(1)}
-              M
-            </div>
-            <p className="text-xs text-muted-foreground">Combined reach</p>
+            <div className="text-2xl font-bold text-blue-700">{(totalReach / 1000000).toFixed(1)}M</div>
+            <p className="text-xs text-blue-600 mt-1">Combined followers</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Sentiment</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <Heart className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {Object.keys(influencerStats).length > 0
-                ? (
-                    Object.values(influencerStats).reduce(
-                      (sum: number, stats: any) => sum + stats.averageSentiment,
-                      0,
-                    ) / Object.keys(influencerStats).length
-                  ).toFixed(2)
-                : "0.00"}
-            </div>
-            <p className="text-xs text-muted-foreground">Overall sentiment</p>
+            <div className="text-2xl font-bold text-green-700">{averageSentiment.toFixed(2)}</div>
+            <p className="text-xs text-green-600 mt-1">Overall brand sentiment</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Top Tier</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Trending</CardTitle>
+            <TrendingUp className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {
-                influencerMentions.filter(
-                  (m) => m.author.influencerTier === "mega" || m.author.influencerTier === "celebrity",
-                ).length
-              }
-            </div>
-            <p className="text-xs text-muted-foreground">Mega/Celebrity mentions</p>
+            <div className="text-2xl font-bold text-orange-700">{trendingInfluencers}</div>
+            <p className="text-xs text-orange-600 mt-1">Viral potential posts</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Top Influencers */}
+      {/* Influencer List */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Star className="h-5 w-5" />
-            Top Influencers by Reach
+            Influencer Activity Dashboard
           </CardTitle>
-          <CardDescription>Influencers with the highest combined reach mentioning your brand</CardDescription>
+          <CardDescription>
+            Track influencers who have mentioned your brand, sorted by reach and engagement
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {topInfluencers.map((influencer: any, index) => (
-              <div key={influencer.author.username} className="flex items-center justify-between p-4 border rounded-lg">
+            {influencers.slice(0, 10).map((influencer) => (
+              <div
+                key={influencer.id}
+                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+              >
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage
-                        src={influencer.author.profileImage || "/placeholder.svg"}
-                        alt={influencer.author.displayName}
-                      />
-                      <AvatarFallback>{influencer.author.displayName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <p className="font-medium">{influencer.author.displayName}</p>
-                      {influencer.author.verified && <Badge variant="secondary">✓</Badge>}
-                      <Badge className={getTierColor(influencer.author.influencerTier)}>
-                        {influencer.author.influencerTier}
-                      </Badge>
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={influencer.profileImage || "/placeholder.svg"} alt={influencer.displayName} />
+                    <AvatarFallback>{influencer.displayName.charAt(0)}</AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-semibold">{influencer.displayName}</h3>
+                      {influencer.verified && <CheckCircle className="h-4 w-4 text-blue-500" />}
+                      {influencer.trending && (
+                        <Badge variant="destructive" className="animate-pulse">
+                          <Flame className="h-3 w-3 mr-1" />
+                          Trending
+                        </Badge>
+                      )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      @{influencer.author.username} • {influencer.author.followers.toLocaleString()} followers
-                    </p>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span>{influencer.mentions.length} mentions</span>
-                      <span>Reach: {(influencer.totalReach / 1000000).toFixed(1)}M</span>
-                      <span className={getSentimentColor(influencer.averageSentiment)}>
-                        Sentiment: {influencer.averageSentiment.toFixed(2)}
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        {getPlatformIcon(influencer.platform)} @{influencer.username}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        {influencer.followers.toLocaleString()} followers
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <MessageCircle className="h-3 w-3" />
+                        {influencer.recentMentions} mentions
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-1">
-                    {Array.from(influencer.platforms).map((platform: string) => (
-                      <span key={platform} className="text-sm">
-                        {getPlatformIcon(platform)}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="text-right space-y-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Heart className="h-3 w-3" />
-                      {influencer.mentions
-                        .reduce((sum: number, m: BrandMention) => sum + m.metrics.likes, 0)
-                        .toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Share className="h-3 w-3" />
-                      {influencer.mentions
-                        .reduce((sum: number, m: BrandMention) => sum + m.metrics.shares, 0)
-                        .toLocaleString()}
+                  <div className="text-right">
+                    <Badge className={getTierColor(influencer.tier)}>
+                      {getTierIcon(influencer.tier)} {influencer.tier.toUpperCase()}
+                    </Badge>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Sentiment:</span>
+                        <span className={`font-medium ${getSentimentColor(influencer.sentimentScore)}`}>
+                          {influencer.sentimentScore.toFixed(2)}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-muted-foreground">Engagement:</span>
+                        <span className="font-medium">{influencer.engagement.toFixed(1)}%</span>
+                      </div>
                     </div>
                   </div>
-                  <Button variant="outline" size="sm">
-                    View Profile
-                  </Button>
+
+                  <div className="space-y-2">
+                    <Button size="sm" variant="outline" className="w-full bg-transparent">
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      View Profile
+                    </Button>
+                    {influencer.collaborationHistory ? (
+                      <Badge variant="secondary" className="w-full justify-center">
+                        Past Collaborator
+                      </Badge>
+                    ) : (
+                      <Button size="sm" variant="default" className="w-full">
+                        Connect
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+
+          {influencers.length === 0 && (
+            <div className="text-center py-8">
+              <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-muted-foreground mb-2">No Influencers Found</h3>
+              <p className="text-muted-foreground">Start monitoring to discover influencers mentioning your brand</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Influencer Tier Breakdown */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Influencer Tier Distribution</CardTitle>
-          <CardDescription>Breakdown of mentions by influencer tier</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {["celebrity", "mega", "macro", "micro"].map((tier) => {
-              const tierMentions = influencerMentions.filter((m) => m.author.influencerTier === tier)
-              const percentage =
-                influencerMentions.length > 0 ? (tierMentions.length / influencerMentions.length) * 100 : 0
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Influencer Tier Distribution</CardTitle>
+            <CardDescription>Breakdown of influencers by tier and reach</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {["celebrity", "mega", "macro", "micro"].map((tier) => {
+                const tierInfluencers = influencers.filter((inf) => inf.tier === tier)
+                const percentage = influencers.length > 0 ? (tierInfluencers.length / influencers.length) * 100 : 0
 
-              return (
-                <div key={tier} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Badge className={getTierColor(tier)}>{tier.charAt(0).toUpperCase() + tier.slice(1)}</Badge>
-                      <span className="text-sm text-muted-foreground">{tierMentions.length} mentions</span>
+                return (
+                  <div key={tier} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>{getTierIcon(tier)}</span>
+                        <span className="font-medium capitalize">{tier}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {tierInfluencers.length}
+                        </Badge>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{percentage.toFixed(1)}%</span>
                     </div>
-                    <span className="text-sm font-medium">{percentage.toFixed(1)}%</span>
+                    <Progress value={percentage} className="h-2" />
                   </div>
-                  <Progress value={percentage} className="h-2" />
-                </div>
-              )
-            })}
-          </div>
-        </CardContent>
-      </Card>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Recent Influencer Activity */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Influencer Activity</CardTitle>
-          <CardDescription>Latest mentions from top-tier influencers</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4 max-h-96 overflow-y-auto">
-            {influencerMentions
-              .filter((m) => m.author.influencerTier === "mega" || m.author.influencerTier === "celebrity")
-              .slice(0, 5)
-              .map((mention) => (
-                <div key={mention.id} className="border rounded-lg p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={mention.author.profileImage || "/placeholder.svg"}
-                          alt={mention.author.displayName}
-                        />
-                        <AvatarFallback>{mention.author.displayName.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">{mention.author.displayName}</p>
-                          {mention.author.verified && (
-                            <Badge variant="secondary" className="text-xs">
-                              ✓
-                            </Badge>
-                          )}
-                          <Badge className={`${getTierColor(mention.author.influencerTier)} text-xs`}>
-                            {mention.author.influencerTier}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {mention.author.followers.toLocaleString()} followers
-                        </p>
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Performing Influencers</CardTitle>
+            <CardDescription>Highest engagement and positive sentiment</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {influencers
+                .filter((inf) => inf.sentimentScore > 0.3)
+                .sort((a, b) => b.engagement - a.engagement)
+                .slice(0, 5)
+                .map((influencer, index) => (
+                  <div key={influencer.id} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      {index + 1}
+                    </div>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={influencer.profileImage || "/placeholder.svg"} alt={influencer.displayName} />
+                      <AvatarFallback className="text-xs">{influencer.displayName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-sm">{influencer.displayName}</span>
+                        {influencer.verified && <CheckCircle className="h-3 w-3 text-blue-500" />}
+                      </div>
+                      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <span>{influencer.followers.toLocaleString()} followers</span>
+                        <span className={getSentimentColor(influencer.sentimentScore)}>
+                          {influencer.sentimentScore.toFixed(2)} sentiment
+                        </span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm">{getPlatformIcon(mention.platform)}</span>
-                      <Badge
-                        variant="outline"
-                        className={`${getSentimentColor(mention.sentiment.score)} border-current text-xs`}
-                      >
-                        {mention.sentiment.emotion}
-                      </Badge>
-                    </div>
+                    <Badge className={getTierColor(influencer.tier)} variant="outline">
+                      {influencer.tier}
+                    </Badge>
                   </div>
-                  <p className="text-sm mb-2">{mention.content.text}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center space-x-3">
-                      <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3" />
-                        {mention.metrics.likes.toLocaleString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Share className="h-3 w-3" />
-                        {mention.metrics.shares.toLocaleString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <MessageCircle className="h-3 w-3" />
-                        {mention.metrics.comments.toLocaleString()}
-                      </span>
-                    </div>
-                    <span>{mention.timestamp.toLocaleTimeString()}</span>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </CardContent>
-      </Card>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

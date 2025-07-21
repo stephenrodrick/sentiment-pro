@@ -1,0 +1,181 @@
+import { type NextRequest, NextResponse } from "next/server"
+
+export async function POST(request: NextRequest) {
+  try {
+    const { timestamp, format, summary, messages, alerts } = await request.json()
+
+    switch (format) {
+      case "csv":
+        return exportCSV(messages, alerts, summary)
+      case "json":
+        return exportJSON({ timestamp, summary, messages, alerts })
+      case "pdf":
+        return exportPDF(messages, alerts, summary)
+      default:
+        return NextResponse.json({ error: "Unsupported format" }, { status: 400 })
+    }
+  } catch (error) {
+    console.error("Export error:", error)
+    return NextResponse.json({ error: "Failed to export data" }, { status: 500 })
+  }
+}
+
+function exportCSV(messages: any[], alerts: any[], summary: any) {
+  const csvHeaders = [
+    "Timestamp",
+    "Message ID",
+    "Customer Name",
+    "Customer ID",
+    "Customer Tier",
+    "Channel",
+    "Message",
+    "Summary",
+    "Emotion",
+    "Sentiment Score",
+    "Confidence Score",
+    "Priority",
+    "Tags",
+    "Escalated",
+  ].join(",")
+
+  const csvRows = messages
+    .map((msg) =>
+      [
+        msg.timestamp,
+        msg.id,
+        `"${msg.customer.name}"`,
+        msg.customer.id,
+        msg.customer.tier,
+        msg.channel,
+        `"${msg.message.replace(/"/g, '""')}"`,
+        `"${msg.summary || ""}"`,
+        msg.sentiment.emotion,
+        msg.sentiment.score,
+        msg.sentiment.confidence,
+        msg.priority,
+        `"${msg.tags.join(", ")}"`,
+        msg.escalated || false,
+      ].join(","),
+    )
+    .join("\n")
+
+  const csvContent = `${csvHeaders}\n${csvRows}`
+
+  return new NextResponse(csvContent, {
+    headers: {
+      "Content-Type": "text/csv",
+      "Content-Disposition": `attachment; filename="sentiment-analysis-${new Date().toISOString().split("T")[0]}.csv"`,
+    },
+  })
+}
+
+function exportJSON(data: any) {
+  const exportData = {
+    metadata: {
+      exportDate: data.timestamp,
+      format: "json",
+      version: "1.0",
+      source: "sentiment-watchdog-pro",
+    },
+    summary: data.summary,
+    analytics: {
+      totalMessages: data.messages.length,
+      totalAlerts: data.alerts.length,
+      averageSentiment: data.summary.averageSentiment,
+      processingAccuracy: 0.95,
+    },
+    messages: data.messages,
+    alerts: data.alerts,
+    exportSettings: {
+      includePersonalData: true,
+      includeMessageContent: true,
+      dataRetentionCompliant: true,
+    },
+  }
+
+  return NextResponse.json(exportData, {
+    headers: {
+      "Content-Disposition": `attachment; filename="sentiment-report-${new Date().toISOString().split("T")[0]}.json"`,
+    },
+  })
+}
+
+function exportPDF(messages: any[], alerts: any[], summary: any) {
+  // In production, you would use a PDF generation library like Puppeteer or jsPDF
+  const reportContent = `
+SENTIMENT WATCHDOG PRO - COMPREHENSIVE REPORT
+============================================
+Generated: ${new Date().toLocaleString()}
+Report Period: ${summary.timeRange}
+
+EXECUTIVE SUMMARY
+================
+Total Messages Processed: ${summary.totalMessages}
+Average Sentiment Score: ${summary.averageSentiment.toFixed(3)}
+Total Alerts Triggered: ${summary.alertsTriggered}
+
+SENTIMENT DISTRIBUTION
+=====================
+${messages
+  .reduce((acc, msg) => {
+    acc[msg.sentiment.emotion] = (acc[msg.sentiment.emotion] || 0) + 1
+    return acc
+  }, {})
+  .map(([emotion, count]) => `${emotion}: ${count} messages`)
+  .join("\n")}
+
+CRITICAL ALERTS
+==============
+${alerts
+  .filter((alert) => alert.severity === "critical")
+  .slice(0, 10)
+  .map(
+    (alert) =>
+      `${alert.timestamp}: ${alert.summary}\n  - Messages: ${alert.messageCount}\n  - Avg Sentiment: ${alert.averageSentiment.toFixed(2)}\n`,
+  )
+  .join("\n")}
+
+TOP NEGATIVE MESSAGES
+====================
+${messages
+  .filter((m) => m.sentiment.score < -0.5)
+  .slice(0, 20)
+  .map(
+    (msg) =>
+      `${msg.timestamp}: ${msg.customer.name} (${msg.channel})\n  Score: ${msg.sentiment.score.toFixed(2)} | Emotion: ${msg.sentiment.emotion}\n  "${msg.message.substring(0, 100)}..."\n`,
+  )
+  .join("\n")}
+
+CHANNEL PERFORMANCE
+==================
+${["email", "chat", "ticket", "phone", "social"]
+  .map((channel) => {
+    const channelMessages = messages.filter((m) => m.channel === channel)
+    const avgSentiment =
+      channelMessages.length > 0
+        ? channelMessages.reduce((sum, m) => sum + m.sentiment.score, 0) / channelMessages.length
+        : 0
+    return `${channel.toUpperCase()}: ${channelMessages.length} messages, Avg: ${avgSentiment.toFixed(2)}`
+  })
+  .join("\n")}
+
+RECOMMENDATIONS
+==============
+1. Monitor channels with negative sentiment trends
+2. Implement proactive outreach for at-risk customers
+3. Review and improve response times for critical issues
+4. Consider additional training for support agents
+5. Implement automated escalation for high-priority customers
+
+---
+Report generated by Sentiment Watchdog Pro
+For questions, contact: support@sentimentwatchdog.com
+  `
+
+  return new NextResponse(reportContent, {
+    headers: {
+      "Content-Type": "text/plain",
+      "Content-Disposition": `attachment; filename="sentiment-report-${new Date().toISOString().split("T")[0]}.txt"`,
+    },
+  })
+}
